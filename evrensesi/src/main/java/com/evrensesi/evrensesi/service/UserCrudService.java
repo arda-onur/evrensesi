@@ -1,9 +1,12 @@
 package com.evrensesi.evrensesi.service;
 
+import com.evrensesi.evrensesi.dto.UserDto;
 import com.evrensesi.evrensesi.model.User;
-import org.springframework.stereotype.Service;
+import com.evrensesi.evrensesi.request.UserRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
-@Service
+
 public interface UserCrudService {
-    public User createUser(User user);
+    User createUser(User user);
+    User authenticateUser(UserRequest userRequest,HttpServletResponse response);
 }

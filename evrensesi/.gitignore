@@ -1,6 +1,10 @@
 HELP.md
-target
-.mvn/wrapper/maven-wrapper.jar
+**/target/
+
+# Maven Wrapper
+.mvn/
+**/.mvn/
+mvnw
 mvnw.cmd
 
 ### STS ###

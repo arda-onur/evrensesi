@@ -1,9 +1,7 @@
 HELP.md
-/target/
+target
 .mvn/wrapper/maven-wrapper.jar
-evrensesi/mvnw
-evrensesi/mvnw.cmd
-evrensesi/pom.xml
+mvnw.cmd
 
 ### STS ###
 .apt_generated
@@ -27,8 +25,6 @@ evrensesi/pom.xml
 /nbdist/
 /.nb-gradle/
 build/
-!**/src/main/**/build/
-!**/src/test/**/build/
 
 ### VS Code ###
 .vscode/

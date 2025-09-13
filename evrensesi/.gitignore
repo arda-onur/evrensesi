@@ -1,9 +1,9 @@
 HELP.md
-target/
+/target/
 .mvn/wrapper/maven-wrapper.jar
-.mvn/
-mvnw
-mvnw.cmd
+evrensesi/mvnw
+evrensesi/mvnw.cmd
+evrensesi/pom.xml
 
 ### STS ###
 .apt_generated

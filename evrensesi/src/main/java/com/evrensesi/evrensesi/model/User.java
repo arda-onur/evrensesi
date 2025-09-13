@@ -48,8 +48,7 @@ public class User implements UserDetails {
     @Column(nullable=false)
     private boolean credentialsNonExpired = true;
 
-    @OneToOne
-    @JoinColumn(name = "comment_id", unique = true)
+    @OneToOne(mappedBy = "user")
     private Comment comment;
 
     @Override

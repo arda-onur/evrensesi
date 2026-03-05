@@ -18,3 +18,8 @@ spring:
     console:
       enabled: true
       path: /h2-console
+
+  logging:
+    level:
+      root: INFO
+      com.arda.evrensesi: DEBUG

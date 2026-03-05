@@ -6,6 +6,7 @@ import com.arda.evrensesi.request.UserRequest;
 import com.arda.evrensesi.service.impl.UserServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,12 +17,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/auth")
+@Slf4j
 public class AuthController {
 
     private final UserServiceImpl userServiceImpl;
 
     @PostMapping("/register")
     public ResponseEntity<UserDTO> register(@Valid @RequestBody UserRequest userRequest){
+        log.info("Register request received email={}", userRequest.email());
        return ResponseEntity.status(HttpStatus.CREATED)
                .body(this.userServiceImpl.register(userRequest));
     }

@@ -8,12 +8,14 @@ import com.arda.evrensesi.mapper.UserMapper;
 import com.arda.evrensesi.repository.UserRepository;
 import com.arda.evrensesi.request.UserRequest;
 import com.arda.evrensesi.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Slf4j
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
@@ -33,6 +35,7 @@ public class UserServiceImpl implements UserService {
 
         try {
             this.userRepository.save(user);
+            log.info("User registered = {}", userRequest.email());
             return UserMapper.toDTO(user);
         }catch (DataIntegrityViolationException dataIntegrityViolationException){
             throw new UserRegistrationException("user.already.exists", userRequest.email());
@@ -41,7 +44,7 @@ public class UserServiceImpl implements UserService {
     }
 
     private void checkRegistrationEligibility(UserRequest userRequest) {
-
+       log.info("Checking registration eligibility = {}", userRequest.email());
         if (userRepository.existsByEmail(userRequest.email()))
             throw new UserRegistrationException("user.already.exists", userRequest.email());
 

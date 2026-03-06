@@ -6,7 +6,8 @@ import com.arda.evrensesi.entity.User;
 import com.arda.evrensesi.exception.UserRegistrationException;
 import com.arda.evrensesi.mapper.UserMapper;
 import com.arda.evrensesi.repository.UserRepository;
-import com.arda.evrensesi.request.UserRequest;
+import com.arda.evrensesi.request.LoginRequest;
+import com.arda.evrensesi.request.RegisterRequest;
 import com.arda.evrensesi.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -42,41 +43,41 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Transactional
-    public UserDTO register(@NotNull UserRequest userRequest){
-        checkRegistrationEligibility(userRequest);
+    public UserDTO register(@NotNull RegisterRequest registerRequest){
+        checkRegistrationEligibility(registerRequest);
 
-        User user = UserMapper.toEntity(userRequest);
-        user.setPassword(passwordEncryption.passwordEncoder().encode(userRequest.password()));
+        User user = UserMapper.toEntity(registerRequest);
+        user.setPassword(passwordEncryption.passwordEncoder().encode(registerRequest.password()));
 
         try {
             this.userRepository.save(user);
-            log.info("User registered = {}", userRequest.email());
+            log.info("User registered = {}", registerRequest.email());
             return UserMapper.toDTO(user);
         }catch (DataIntegrityViolationException dataIntegrityViolationException){
-            throw new UserRegistrationException("user.already.exists", userRequest.email());
+            throw new UserRegistrationException("user.already.exists", registerRequest.email());
         }
 
     }
 
-  public void login(UserRequest userRequest, HttpServletRequest httpRequest){
-      Authentication authentication = authenticate(userRequest);
+  public void login(LoginRequest loginRequest, HttpServletRequest httpRequest){
+      Authentication authentication = authenticate(loginRequest);
       SecurityContext context = createSecurityContext(authentication);
       storeSecurityContextInSession(httpRequest, context);
-      log.info("User logged in = {}", userRequest.email());
+      log.info("User logged in = {}", loginRequest.email());
   }
 
 
-    private void checkRegistrationEligibility(UserRequest userRequest) {
-       log.info("Checking registration eligibility = {}", userRequest.email());
-        if (userRepository.existsByEmail(userRequest.email()))
-            throw new UserRegistrationException("user.already.exists", userRequest.email());
+    private void checkRegistrationEligibility(RegisterRequest registerRequest) {
+       log.info("Checking registration eligibility = {}", registerRequest.email());
+        if (userRepository.existsByEmail(registerRequest.email()))
+            throw new UserRegistrationException("user.already.exists", registerRequest.email());
 
-        if (!userRequest.password().equals(userRequest.rePassword()))
+        if (!registerRequest.password().equals(registerRequest.rePassword()))
             throw new UserRegistrationException("user.request.validation.password.mismatch");
     }
-    private Authentication authenticate(UserRequest userRequest) {
+    private Authentication authenticate(LoginRequest loginRequest) {
         UsernamePasswordAuthenticationToken authRequest =
-                new UsernamePasswordAuthenticationToken(userRequest.email(), userRequest.password());
+                new UsernamePasswordAuthenticationToken(loginRequest.email(), loginRequest.password());
 
         return authenticationManager.authenticate(authRequest);
     }

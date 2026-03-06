@@ -4,7 +4,7 @@ import com.arda.evrensesi.config.PasswordEncryption;
 import com.arda.evrensesi.entity.User;
 import com.arda.evrensesi.exception.UserRegistrationException;
 import com.arda.evrensesi.repository.UserRepository;
-import com.arda.evrensesi.request.UserRequest;
+import com.arda.evrensesi.request.RegisterRequest;
 import com.arda.evrensesi.service.impl.UserServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,7 +33,7 @@ public class UserServiceUnitTest {
      @Test
     void register_shouldThrowException_whenEmailExists() {
          String email ="test@mail.com";
-         UserRequest request = new UserRequest(email,"123","123");
+         RegisterRequest request = new RegisterRequest(email,"123","123");
 
          when(userRepository.existsByEmail(email)).thenReturn(true);
          assertThrows(UserRegistrationException.class, () -> this.userService.register(request));
@@ -44,7 +44,7 @@ public class UserServiceUnitTest {
 
     @Test
     void register_shouldThrowException_whenPasswordsMismatch() {
-        UserRequest request = new UserRequest("test@mail.com","123","456");
+        RegisterRequest request = new RegisterRequest("test@mail.com","123","456");
 
         when(userRepository.existsByEmail("test@mail.com")).thenReturn(false);
 
@@ -56,7 +56,7 @@ public class UserServiceUnitTest {
     @Test
     void register_shouldSaveUser() {
 
-        UserRequest request = new UserRequest("test@mail.com", "123", "123");
+        RegisterRequest request = new RegisterRequest("test@mail.com", "123", "123");
 
         when(userRepository.existsByEmail("test@mail.com")).thenReturn(false);
 

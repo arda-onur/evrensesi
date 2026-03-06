@@ -1,15 +1,13 @@
 package com.arda.evrensesi.request;
 
-import com.arda.evrensesi.entity.User;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.Setter;
 
 import java.util.Locale;
 
 
-public record UserRequest(
+public record RegisterRequest(
         @NotBlank(message = "user.request.validation.email")
         @Email
         String email,
@@ -23,7 +21,7 @@ public record UserRequest(
         String rePassword
 )
 {
-        public UserRequest {
+        public RegisterRequest {
                 if(email != null){
                  email = email.trim().toLowerCase(Locale.ROOT);
                 }

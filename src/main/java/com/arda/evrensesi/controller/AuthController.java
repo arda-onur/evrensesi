@@ -2,8 +2,9 @@ package com.arda.evrensesi.controller;
 
 
 import com.arda.evrensesi.dto.UserDTO;
-import com.arda.evrensesi.request.UserRequest;
-import com.arda.evrensesi.service.impl.UserServiceImpl;
+import com.arda.evrensesi.request.LoginRequest;
+import com.arda.evrensesi.request.RegisterRequest;
+import com.arda.evrensesi.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -21,19 +22,19 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class AuthController {
 
-    private final UserServiceImpl userServiceImpl;
+    private final UserService userService;
 
     @PostMapping("/register")
-    public ResponseEntity<UserDTO> register(@Valid @RequestBody UserRequest userRequest){
-        log.info("Register request received email={}", userRequest.email());
+    public ResponseEntity<UserDTO> register(@Valid @RequestBody RegisterRequest registerRequest){
+        log.info("Register request received email={}", registerRequest.email());
        return ResponseEntity.status(HttpStatus.CREATED)
-               .body(this.userServiceImpl.register(userRequest));
+               .body(this.userService.register(registerRequest));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Void> login(@Valid @RequestBody UserRequest userRequest, HttpServletRequest httpRequest){
-        log.info("Login request received email={}", userRequest.email());
-        this.userServiceImpl.login(userRequest,httpRequest);
+    public ResponseEntity<Void> login(@Valid @RequestBody LoginRequest loginRequest, HttpServletRequest httpRequest){
+        log.info("Login request received email={}", loginRequest.email());
+        this.userService.login(loginRequest,httpRequest);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

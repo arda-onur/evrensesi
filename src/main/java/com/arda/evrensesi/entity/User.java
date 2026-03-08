@@ -9,6 +9,7 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Entity
+@Table(name = "users")
 @RequiredArgsConstructor
 @Getter
 @Setter
@@ -34,6 +35,11 @@ public class User {
     @PrePersist
     void prePersist() {
        this.createdAt = Instant.now();
+    }
+
+    public void linkStar(Star star) {
+        this.star = star;
+        star.setUser(this);
     }
 }
 

@@ -8,16 +8,16 @@ import java.util.Locale;
 
 
 public record RegisterRequest(
-        @NotBlank(message = "user.request.validation.email")
-        @Email
+        @NotBlank(message = "{user.request.validation.email}")
+        @Email(message = "{user.request.validation.email.invalid}")
         String email,
 
-        @NotBlank(message = "user.request.validation.password")
-        @Size(min = 3, message ="user.request.validation.password.size" )
+        @NotBlank(message = "{user.request.validation.password}")
+        @Size(min = 3, message = "{user.request.validation.password.size}")
         String password,
 
-        @NotBlank(message = "user.request.validation.password")
-        @Size(min = 3, message ="user.request.validation.password.size" )
+        @NotBlank(message = "{user.request.validation.password}")
+        @Size(min = 3, message = "{user.request.validation.password.size}")
         String rePassword
 )
 {

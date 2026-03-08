@@ -1,6 +1,5 @@
 package com.arda.evrensesi.service.impl;
 
-import com.arda.evrensesi.config.PasswordEncryption;
 import com.arda.evrensesi.dto.UserDTO;
 import com.arda.evrensesi.entity.User;
 import com.arda.evrensesi.exception.UserRegistrationException;
@@ -18,9 +17,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,17 +25,16 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Slf4j
-public class UserServiceImpl implements UserService, UserDetailsService {
+public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-    private final PasswordEncryption passwordEncryption;
+    private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
 
-    public UserServiceImpl(UserRepository userRepository,
-                           PasswordEncryption passwordEncryption,
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder,
                            AuthenticationManager authenticationManager) {
         this.userRepository = userRepository;
-        this.passwordEncryption = passwordEncryption;
+        this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
     }
 
@@ -47,7 +43,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         checkRegistrationEligibility(registerRequest);
 
         User user = UserMapper.toEntity(registerRequest);
-        user.setPassword(passwordEncryption.passwordEncoder().encode(registerRequest.password()));
+        user.setPassword(passwordEncoder.encode(registerRequest.password()));
 
         try {
             this.userRepository.save(user);
@@ -94,17 +90,5 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                 HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
                 context
         );
-    }
-
-    @NotNull
-    @Override
-    public UserDetails loadUserByUsername(@NotNull String email) throws UsernameNotFoundException {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException(email));
-        return org.springframework.security.core.userdetails.User
-                .withUsername(user.getEmail())
-                .password(user.getPassword())
-                .authorities("ROLE_USER")
-                .build();
     }
 }

@@ -14,7 +14,7 @@ import java.util.UUID;
 public interface StarRepository extends JpaRepository<Star, UUID> {
 
     @Query("""
-            SELECT new StarPointResponse(s.x, s.y)
+                SELECT new com.arda.evrensesi.dto.StarPointDTO(s.x, s.y)
             FROM Star s
             """)
     List<StarPointDTO> findAllPoints();

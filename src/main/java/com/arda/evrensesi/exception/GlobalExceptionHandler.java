@@ -1,6 +1,6 @@
 package com.arda.evrensesi.exception;
 
-import lombok.RequiredArgsConstructor;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
@@ -27,6 +27,15 @@ public class GlobalExceptionHandler {
         log.warn("User registration error: key={}, args={}", ex.getMessage(), ex.getArgs());
 
         String msg = messageSource.getMessage(ex.getMessage(), ex.getArgs(), ex.getMessage(), locale);
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(msg);
+    }
+
+    @ExceptionHandler(StarAlreadyExistsException.class)
+    public ResponseEntity<String> handleStarAlreadyExistsException(StarAlreadyExistsException ex, Locale locale) {
+        log.warn("Star Already Exists: key={}, args={}", ex.getMessage(), ex.getArgs());
+
+        String msg = messageSource.getMessage(ex.getMessage(), null , ex.getMessage(), locale);
 
         return ResponseEntity.status(HttpStatus.CONFLICT).body(msg);
     }

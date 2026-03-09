@@ -1,4 +1,4 @@
-package com.arda.evrensesi.exception;
+package com.arda.evrensesi.exception.customException;
 
 import lombok.Getter;
 

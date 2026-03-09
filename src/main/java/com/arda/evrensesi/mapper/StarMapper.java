@@ -1,6 +1,6 @@
 package com.arda.evrensesi.mapper;
 
-import com.arda.evrensesi.dto.StarPointDTO;
+import com.arda.evrensesi.dto.StarCoordinatesDTO;
 import com.arda.evrensesi.entity.Star;
 import com.arda.evrensesi.request.StarRequest;
 
@@ -19,12 +19,12 @@ public class StarMapper {
         return star;
     }
 
-    public static StarPointDTO toPointDTO(Star star) {
+    public static StarCoordinatesDTO toPointDTO(Star star) {
         if (star == null) {
             return null;
         }
 
-        return new StarPointDTO(
+        return new StarCoordinatesDTO(
                 star.getX(),
                 star.getY()
         );

@@ -1,8 +1,6 @@
 package com.arda.evrensesi.dto;
 
-import java.util.UUID;
-
-public record StarPointDTO(
+public record StarCoordinatesDTO(
         int x,
         int y
 ) {

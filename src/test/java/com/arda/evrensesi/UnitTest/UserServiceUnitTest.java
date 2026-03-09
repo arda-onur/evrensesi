@@ -1,7 +1,7 @@
 package com.arda.evrensesi.UnitTest;
 
 import com.arda.evrensesi.entity.User;
-import com.arda.evrensesi.exception.UserRegistrationException;
+import com.arda.evrensesi.exception.customException.UserRegistrationException;
 import com.arda.evrensesi.repository.UserRepository;
 import com.arda.evrensesi.request.LoginRequest;
 import com.arda.evrensesi.request.RegisterRequest;

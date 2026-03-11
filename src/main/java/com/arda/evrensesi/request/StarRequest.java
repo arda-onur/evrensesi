@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
 public record StarRequest(
-        @NotBlank
+        @NotBlank(message = "{star.message.cannot.be.blank}")
         @Size(max = 600, message = "{star.message.max.characters}")
         String message,
 

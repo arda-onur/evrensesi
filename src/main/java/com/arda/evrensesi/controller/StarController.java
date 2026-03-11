@@ -25,10 +25,8 @@ public class StarController {
     }
 
     @GetMapping("/points")
-    public ResponseEntity<Page<StarCoordinatesDTO>> getAllStarCoordinates(
-            @RequestParam int page,
-            @RequestParam int size) {
-
+    public ResponseEntity<Page<StarCoordinatesDTO>> getAllStarCoordinates(@RequestParam int page,
+                                                                          @RequestParam int size) {
         return ResponseEntity.ok(this.starService.getAllStarCoordinates(page, size));
     }
 

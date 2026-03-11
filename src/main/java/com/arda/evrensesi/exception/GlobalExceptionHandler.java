@@ -9,6 +9,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -34,22 +35,46 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.CONFLICT).body(msg);
     }
-
-    @ExceptionHandler({StarAlreadyExistsException.class, StarCreationException.class})
+    @ExceptionHandler(StarAlreadyExistsException.class)
     public ResponseEntity<String> handleStarAlreadyExistsException(StarAlreadyExistsException ex, Locale locale) {
         log.warn("Star conflict occurred: messageKey={}", ex.getMessage());
 
-        String msg = messageSource.getMessage(ex.getMessage(), null , ex.getMessage(), locale);
+        String msg = messageSource.getMessage(ex.getMessage(), ex.getArgs(), ex.getMessage(), locale);
 
         return ResponseEntity.status(HttpStatus.CONFLICT).body(msg);
     }
 
+    @ExceptionHandler(StarCreationException.class)
+    public ResponseEntity<String> handleStarCreationException(StarCreationException ex, Locale locale) {
+        log.warn("Star creation failed: messageKey={}", ex.getMessage());
+
+        String msg = messageSource.getMessage(ex.getMessage(), null, ex.getMessage(), locale);
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(msg);
+    }
+
+
+
     @ExceptionHandler({BadCredentialsException.class, UsernameNotFoundException.class})
-    public ResponseEntity<String> handleLoginAuthExceptions(RuntimeException ex) {
+    public ResponseEntity<String> handleLoginAuthExceptions(AuthenticationException ex, Locale locale) {
         log.warn("Login failed: {}", ex.getClass().getSimpleName());
 
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid email or password");
+        String messageKey;
+
+        if (ex instanceof BadCredentialsException) {
+            messageKey = "auth.bad.credentials";
+        } else if (ex instanceof UsernameNotFoundException) {
+            messageKey = "auth.user.not.found";
+        } else {
+            messageKey = "auth.failed";
+        }
+
+        String msg = messageSource.getMessage(messageKey, null, locale);
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(msg);
     }
+
+
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException ex, Locale locale) {
 

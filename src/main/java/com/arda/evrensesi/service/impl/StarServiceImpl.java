@@ -43,13 +43,13 @@ public class StarServiceImpl implements StarService {
                 throw new StarAlreadyExistsException("star.already.exists", userEmail);
 
             User user = userRepository.findByEmail(userEmail)
-                    .orElseThrow(() -> new UsernameNotFoundException("user.not.found"));
+                    .orElseThrow(() -> new UsernameNotFoundException("star.creation.must.be.login"));
 
             Star star = StarMapper.toEntity(starRequest);
             user.linkStar(star);
 
             try {
-                starRepository.save(star);
+                starRepository.saveAndFlush(star);
                 log.info("Star created successfully for user: {} at coordinates ({},{})",
                         userEmail, star.getX(), star.getY());
 

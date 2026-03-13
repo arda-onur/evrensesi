@@ -1,0 +1,51 @@
+package com.arda.evrensesi.security.filter;
+
+import com.arda.evrensesi.service.RateLimiterService;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import java.io.IOException;
+@Component
+public class RateLimiterFilter extends OncePerRequestFilter {
+
+    private final RateLimiterService rateLimiterService;
+
+    public RateLimiterFilter(RateLimiterService rateLimiterService) {
+        this.rateLimiterService = rateLimiterService;
+    }
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getRequestURI();
+        return path.startsWith("/h2-console");
+    }
+
+    @Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
+                                                        FilterChain filterChain) throws ServletException, IOException {
+
+        String ip = request.getRemoteAddr();
+
+        if (!this.rateLimiterService.isValidRequest(ip, 5, 60)) {
+            response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
+            response.setContentType("application/json");
+            response.getWriter().write("""
+                {
+                    "error": "Too many requests",
+                    "message": "Rate limit exceeded"
+                }
+                """);
+
+            response.setHeader("X-RateLimit-Limit", "5");
+            response.setHeader("X-RateLimit-Remaining", "0");
+            return;
+        }
+
+        filterChain.doFilter(request, response);
+    }
+}

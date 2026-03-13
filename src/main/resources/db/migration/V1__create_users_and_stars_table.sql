@@ -1,0 +1,21 @@
+CREATE TABLE IF NOT EXISTS users(
+     id UUID PRIMARY KEY,
+     email VARCHAR(320) UNIQUE NOT NULL,
+     password VARCHAR(255) NOT NULL,
+     created_at TIMESTAMP WITH TIME ZONE
+);
+
+CREATE TABLE IF NOT EXISTS stars(
+id UUID PRIMARY KEY,
+message TEXT NOT NULL,
+x INT NOT NULL,
+y INT NOT NULL,
+created_at TIMESTAMP WITH TIME ZONE,
+user_id UUID NOT NULL UNIQUE,
+CONSTRAINT fk_star_user
+       FOREIGN KEY (user_id)
+       REFERENCES users(id)
+       ON DELETE CASCADE,
+CONSTRAINT uk_star_xy
+    UNIQUE (x,y)
+);

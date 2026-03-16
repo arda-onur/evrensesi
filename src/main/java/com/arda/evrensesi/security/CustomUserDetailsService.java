@@ -1,6 +1,6 @@
 package com.arda.evrensesi.security;
 
-import com.arda.evrensesi.entity.User;
+import com.arda.evrensesi.model.entity.User;
 import com.arda.evrensesi.repository.UserRepository;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.security.core.userdetails.UserDetails;

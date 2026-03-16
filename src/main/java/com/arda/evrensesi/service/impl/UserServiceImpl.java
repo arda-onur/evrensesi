@@ -1,9 +1,9 @@
 package com.arda.evrensesi.service.impl;
 
 import com.arda.evrensesi.dto.UserDTO;
-import com.arda.evrensesi.entity.User;
+import com.arda.evrensesi.model.entity.User;
 import com.arda.evrensesi.exception.customException.UserRegistrationException;
-import com.arda.evrensesi.mapper.UserMapper;
+import com.arda.evrensesi.mapper.api.UserMapper;
 import com.arda.evrensesi.repository.UserRepository;
 import com.arda.evrensesi.request.LoginRequest;
 import com.arda.evrensesi.request.RegisterRequest;

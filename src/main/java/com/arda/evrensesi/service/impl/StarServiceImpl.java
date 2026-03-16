@@ -1,16 +1,19 @@
 package com.arda.evrensesi.service.impl;
 
 import com.arda.evrensesi.dto.StarCoordinatesDTO;
-import com.arda.evrensesi.entity.Star;
-import com.arda.evrensesi.entity.User;
+import com.arda.evrensesi.event.StarCreatedEvent;
+import com.arda.evrensesi.model.entity.Star;
+import com.arda.evrensesi.model.entity.User;
 import com.arda.evrensesi.exception.customException.StarAlreadyExistsException;
 import com.arda.evrensesi.exception.customException.StarCreationException;
-import com.arda.evrensesi.mapper.StarMapper;
+import com.arda.evrensesi.mapper.api.StarMapper;
+import com.arda.evrensesi.repository.StarESRepository;
 import com.arda.evrensesi.repository.StarRepository;
 import com.arda.evrensesi.repository.UserRepository;
 import com.arda.evrensesi.request.StarRequest;
 import com.arda.evrensesi.service.StarService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -26,10 +29,16 @@ import java.util.Objects;
 public class StarServiceImpl implements StarService {
         private final StarRepository starRepository;
         private final UserRepository userRepository;
+        private final StarESRepository starESRepository;
+        private final ApplicationEventPublisher applicationEventPublisher;
 
-        public StarServiceImpl(StarRepository starRepository, UserRepository userRepository) {
+        public StarServiceImpl(StarRepository starRepository,
+                               UserRepository userRepository,
+                               StarESRepository starESRepository, ApplicationEventPublisher applicationEventPublisher) {
             this.starRepository = starRepository;
             this.userRepository = userRepository;
+            this.starESRepository = starESRepository;
+            this.applicationEventPublisher = applicationEventPublisher;
         }
 
         @Transactional
@@ -44,12 +53,16 @@ public class StarServiceImpl implements StarService {
 
             User user = userRepository.findByEmail(userEmail)
                     .orElseThrow(() -> new UsernameNotFoundException("star.creation.must.be.login"));
-
-            Star star = StarMapper.toEntity(starRequest);
-            user.linkStar(star);
-
             try {
+                Star star = StarMapper.toEntity(starRequest);
+                user.linkStar(star);
                 starRepository.saveAndFlush(star);
+
+                applicationEventPublisher.publishEvent(new StarCreatedEvent(star.getId(),
+                                                                            star.getMessage(),
+                                                                            star.getX(),
+                                                                            star.getY()));
+
                 log.info("Star created successfully for user: {} at coordinates ({},{})",
                         userEmail, star.getX(), star.getY());
 

@@ -1,7 +1,7 @@
-package com.arda.evrensesi.mapper;
+package com.arda.evrensesi.mapper.api;
 
 import com.arda.evrensesi.dto.UserDTO;
-import com.arda.evrensesi.entity.User;
+import com.arda.evrensesi.model.entity.User;
 import com.arda.evrensesi.request.RegisterRequest;
 
 public class UserMapper {

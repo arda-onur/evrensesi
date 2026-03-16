@@ -1,7 +1,7 @@
-package com.arda.evrensesi.mapper;
+package com.arda.evrensesi.mapper.api;
 
 import com.arda.evrensesi.dto.StarCoordinatesDTO;
-import com.arda.evrensesi.entity.Star;
+import com.arda.evrensesi.model.entity.Star;
 import com.arda.evrensesi.request.StarRequest;
 
 public class StarMapper {

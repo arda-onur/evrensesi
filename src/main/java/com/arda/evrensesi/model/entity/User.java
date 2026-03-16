@@ -1,4 +1,4 @@
-package com.arda.evrensesi.entity;
+package com.arda.evrensesi.model.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;

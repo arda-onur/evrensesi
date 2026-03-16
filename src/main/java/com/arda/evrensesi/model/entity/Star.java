@@ -9,7 +9,7 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Entity
-@Table(uniqueConstraints = {
+@Table(name = "stars", uniqueConstraints = {
         @UniqueConstraint(name = "uk_star_xy", columnNames = {"x","y"})
          })
 @RequiredArgsConstructor
@@ -31,6 +31,9 @@ public class Star {
 
     @Column(nullable = false)
     private Instant createdAt;
+
+    @Column(name = "es_indexed", nullable = false)
+    private boolean esIndexed = false;
 
     @OneToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false, unique = true)

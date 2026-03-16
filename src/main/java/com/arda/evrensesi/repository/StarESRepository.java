@@ -1,0 +1,13 @@
+package com.arda.evrensesi.repository;
+
+import com.arda.evrensesi.model.document.StarDocument;
+import com.arda.evrensesi.model.entity.Star;
+import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface StarESRepository extends ElasticsearchRepository<StarDocument, String> {
+
+
+
+}

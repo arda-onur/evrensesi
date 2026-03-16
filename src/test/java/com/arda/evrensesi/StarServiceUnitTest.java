@@ -1,8 +1,8 @@
 package com.arda.evrensesi;
 
 import com.arda.evrensesi.dto.StarCoordinatesDTO;
-import com.arda.evrensesi.entity.Star;
-import com.arda.evrensesi.entity.User;
+import com.arda.evrensesi.model.entity.Star;
+import com.arda.evrensesi.model.entity.User;
 import com.arda.evrensesi.exception.customException.StarAlreadyExistsException;
 import com.arda.evrensesi.exception.customException.StarCreationException;
 import com.arda.evrensesi.repository.StarRepository;

@@ -13,6 +13,13 @@ public class StarDocumentMapper {
                                 star.message(),
                                 star.x(),
                                 star.y());
-
+    }
+    public static StarDocument toDocument(Star star) {
+        return new StarDocument(
+                star.getId().toString(),
+                star.getMessage(),
+                star.getX(),
+                star.getY()
+        );
     }
 }

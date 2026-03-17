@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.UUID;
 
 @Repository
@@ -20,4 +21,11 @@ public interface StarRepository extends JpaRepository<Star, UUID> {
     Page<StarCoordinatesDTO> findAllStarCoordinates(Pageable pageable);
 
     boolean existsByUserEmail(String email);
+
+   @Query("""
+           SELECT s
+           FROM Star s
+           WHERE s.esIndexed = false
+           """)
+    List<Star> findAllByEsIndexedFalse();
 }

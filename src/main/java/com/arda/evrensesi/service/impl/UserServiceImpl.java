@@ -9,6 +9,7 @@ import com.arda.evrensesi.request.LoginRequest;
 import com.arda.evrensesi.request.RegisterRequest;
 import com.arda.evrensesi.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -55,11 +56,16 @@ public class UserServiceImpl implements UserService {
 
     }
 
-  public void login(LoginRequest loginRequest, HttpServletRequest httpRequest){
+  public void login(LoginRequest loginRequest, HttpServletRequest httpRequest, HttpServletResponse httpResponse){
       Authentication authentication = authenticate(loginRequest);
       SecurityContext context = createSecurityContext(authentication);
-      storeSecurityContextInSession(httpRequest, context);
+
+      HttpSessionSecurityContextRepository repository = new HttpSessionSecurityContextRepository();
+      repository.saveContext(context, httpRequest, httpResponse);
+
       log.info("User logged in = {}", loginRequest.email());
+      log.info("Session id after login = {}", httpRequest.getSession(false) != null ? httpRequest.getSession(false).getId() : "no-session");
+      log.info("Authentication after login = {}", SecurityContextHolder.getContext().getAuthentication());
   }
 
 
@@ -85,10 +91,5 @@ public class UserServiceImpl implements UserService {
         return context;
     }
 
-    private void storeSecurityContextInSession(HttpServletRequest request, SecurityContext context) {
-        request.getSession(true).setAttribute(
-                HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
-                context
-        );
-    }
+
 }

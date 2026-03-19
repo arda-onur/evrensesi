@@ -22,7 +22,7 @@ public class RateLimiterFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getRequestURI();
-        return path.startsWith("/h2-console");
+        return path.startsWith("/h2-console") || path.startsWith("/star/points");
     }
 
     @Override
@@ -31,7 +31,7 @@ public class RateLimiterFilter extends OncePerRequestFilter {
 
         String ip = request.getRemoteAddr();
 
-        if (!this.rateLimiterService.isValidRequest(ip, 5, 60)) {
+        if (!this.rateLimiterService.isValidRequest(ip, 10, 60)) {
             response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
             response.setContentType("application/json");
             response.getWriter().write("""

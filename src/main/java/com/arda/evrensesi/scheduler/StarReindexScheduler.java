@@ -40,6 +40,7 @@ public class StarReindexScheduler {
                 StarDocument starDocument = StarDocumentMapper.toDocument(star);
                 this.starESRepository.save(starDocument);
                 this.starIndexStatusService.markIndexed(star.getId());
+                log.info("Successfully indexed star. starId={}", star.getId());
             }catch (Exception e){
                 log.error("Failed to index star. starId={}", star.getId(), e);
             }

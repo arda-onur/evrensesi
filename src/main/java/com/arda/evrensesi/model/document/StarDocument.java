@@ -2,6 +2,7 @@ package com.arda.evrensesi.model.document;
 
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
@@ -10,6 +11,7 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 @Document(indexName="stars")
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
 public class StarDocument {
 
     @Id

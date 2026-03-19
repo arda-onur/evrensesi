@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 
 @RestController
 @RequiredArgsConstructor
@@ -29,5 +31,13 @@ public class StarController {
                                                                           @RequestParam int size) {
         return ResponseEntity.ok(this.starService.getAllStarCoordinates(page, size));
     }
+    @GetMapping("/mystar")
+    public ResponseEntity<StarCoordinatesDTO> getMyStar() {
+        return ResponseEntity.ok(this.starService.getUserStar());
+    }
 
+    @GetMapping("/search")
+    public ResponseEntity<List<StarCoordinatesDTO> >search(@RequestParam String keyword) {
+        return ResponseEntity.ok(this.starService.search(keyword));
+    }
 }

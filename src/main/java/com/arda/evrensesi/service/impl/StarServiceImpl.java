@@ -2,6 +2,7 @@ package com.arda.evrensesi.service.impl;
 
 import com.arda.evrensesi.dto.StarCoordinatesDTO;
 import com.arda.evrensesi.event.StarCreatedEvent;
+import com.arda.evrensesi.mapper.search.StarDocumentMapper;
 import com.arda.evrensesi.model.entity.Star;
 import com.arda.evrensesi.model.entity.User;
 import com.arda.evrensesi.exception.customException.StarAlreadyExistsException;
@@ -23,7 +24,11 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+
 @Service
 @Slf4j
 public class StarServiceImpl implements StarService {
@@ -85,6 +90,30 @@ public class StarServiceImpl implements StarService {
         log.info("Fetched {} star coordinates", result.getNumberOfElements());
 
         return result;
+    }
+
+    public List<StarCoordinatesDTO> search(String keyword) {
+        if (keyword == null || keyword.isBlank()) {
+            return Collections.emptyList();
+        }
+            List<StarCoordinatesDTO> list = this.starESRepository
+                    .findByMessageContaining(keyword)
+                    .stream()
+                    .map(StarDocumentMapper::toCoordinatesDto)
+                    .toList();
+
+            return list;
+    }
+
+    public StarCoordinatesDTO getUserStar() {
+        String email = getUserEmail();
+
+        if (email == null) {
+            throw new IllegalStateException("User is not authenticated");
+        }
+
+        return starRepository.findUserStar(email)
+                .orElseThrow(() -> new RuntimeException("Star not found for user: " + email));
     }
 
     private String getUserEmail(){

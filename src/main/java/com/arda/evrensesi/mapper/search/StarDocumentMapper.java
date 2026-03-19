@@ -1,5 +1,6 @@
 package com.arda.evrensesi.mapper.search;
 
+import com.arda.evrensesi.dto.StarCoordinatesDTO;
 import com.arda.evrensesi.event.StarCreatedEvent;
 import com.arda.evrensesi.model.document.StarDocument;
 import com.arda.evrensesi.model.entity.Star;
@@ -22,4 +23,12 @@ public class StarDocumentMapper {
                 star.getY()
         );
     }
+    public static StarCoordinatesDTO toCoordinatesDto(StarDocument document) {
+        if (document == null) {
+            return null;
+        }
+
+        return new StarCoordinatesDTO(document.getX(), document.getY());
+    }
+
 }

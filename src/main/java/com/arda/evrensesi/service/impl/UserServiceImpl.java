@@ -31,14 +31,16 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
+    private final HttpSessionSecurityContextRepository securityContextRepository;
 
     public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder,
-                           AuthenticationManager authenticationManager) {
+                           AuthenticationManager authenticationManager, HttpSessionSecurityContextRepository securityContextRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
+        this.securityContextRepository = securityContextRepository;
     }
-
+    @Override
     @Transactional
     public UserDTO register(@NotNull RegisterRequest registerRequest){
         checkRegistrationEligibility(registerRequest);
@@ -48,34 +50,39 @@ public class UserServiceImpl implements UserService {
 
         try {
             this.userRepository.save(user);
-            log.info("User registered = {}", registerRequest.email());
+            log.info("User registered successfully. email={}", registerRequest.email());
             return UserMapper.toDTO(user);
-        }catch (DataIntegrityViolationException dataIntegrityViolationException){
+
+        }catch (DataIntegrityViolationException ex){
+            log.warn("User registration failed due to data integrity violation. email={}", registerRequest.email(), ex);
             throw new UserRegistrationException("user.already.exists", registerRequest.email());
         }
 
     }
 
   public void login(LoginRequest loginRequest, HttpServletRequest httpRequest, HttpServletResponse httpResponse){
+      log.info("Login requested. email={}", loginRequest.email());
+
       Authentication authentication = authenticate(loginRequest);
       SecurityContext context = createSecurityContext(authentication);
 
-      HttpSessionSecurityContextRepository repository = new HttpSessionSecurityContextRepository();
-      repository.saveContext(context, httpRequest, httpResponse);
+      this.securityContextRepository.saveContext(context, httpRequest, httpResponse);
 
       log.info("User logged in = {}", loginRequest.email());
-      log.info("Session id after login = {}", httpRequest.getSession(false) != null ? httpRequest.getSession(false).getId() : "no-session");
-      log.info("Authentication after login = {}", SecurityContextHolder.getContext().getAuthentication());
   }
 
 
     private void checkRegistrationEligibility(RegisterRequest registerRequest) {
        log.info("Checking registration eligibility = {}", registerRequest.email());
+
         if (userRepository.existsByEmail(registerRequest.email()))
             throw new UserRegistrationException("user.already.exists", registerRequest.email());
 
-        if (!registerRequest.password().equals(registerRequest.rePassword()))
+        if (!registerRequest.password().equals(registerRequest.rePassword())){
+            log.warn("Registration rejected because passwords do not match. email={}", registerRequest.email());
             throw new UserRegistrationException("user.request.validation.password.mismatch");
+        }
+        log.info("Registration eligibility check passed. email={}", registerRequest.email());
     }
     private Authentication authenticate(LoginRequest loginRequest) {
         UsernamePasswordAuthenticationToken authRequest =

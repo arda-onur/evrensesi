@@ -1,6 +1,7 @@
 package com.arda.evrensesi.controller;
 
 import com.arda.evrensesi.dto.StarCoordinatesDTO;
+import com.arda.evrensesi.dto.StarMessageDTO;
 import com.arda.evrensesi.request.StarRequest;
 import com.arda.evrensesi.service.StarService;
 import jakarta.validation.Valid;
@@ -28,7 +29,7 @@ public class StarController {
 
     @GetMapping("/points")
     public ResponseEntity<Page<StarCoordinatesDTO>> getAllStarCoordinates(@RequestParam int page,
-                                                                          @RequestParam int size) {
+                                                                            @RequestParam int size) {
         return ResponseEntity.ok(this.starService.getAllStarCoordinates(page, size));
     }
     @GetMapping("/mystar")
@@ -39,5 +40,9 @@ public class StarController {
     @GetMapping("/search")
     public ResponseEntity<List<StarCoordinatesDTO> >search(@RequestParam String keyword) {
         return ResponseEntity.ok(this.starService.search(keyword));
+    }
+    @GetMapping("/getMessage")
+    public ResponseEntity<StarMessageDTO> getMessage(@RequestParam int x, @RequestParam int y) {
+        return ResponseEntity.ok(this.starService.getStarMessage(x,y));
     }
 }

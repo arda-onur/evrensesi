@@ -1,7 +1,9 @@
 package com.arda.evrensesi.service;
 
 import com.arda.evrensesi.dto.StarCoordinatesDTO;
+import com.arda.evrensesi.dto.StarMessageDTO;
 import com.arda.evrensesi.model.document.StarDocument;
+import com.arda.evrensesi.request.MessageRequest;
 import com.arda.evrensesi.request.StarRequest;
 import org.springframework.data.domain.Page;
 
@@ -12,4 +14,5 @@ public interface StarService {
     Page<StarCoordinatesDTO> getAllStarCoordinates(int page, int size);
     StarCoordinatesDTO getUserStar();
     List<StarCoordinatesDTO> search(String keyword);
+    StarMessageDTO getStarMessage(int x, int y);
 }

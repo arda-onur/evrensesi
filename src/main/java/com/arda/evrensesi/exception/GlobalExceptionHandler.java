@@ -3,6 +3,7 @@ package com.arda.evrensesi.exception;
 
 import com.arda.evrensesi.exception.customException.StarAlreadyExistsException;
 import com.arda.evrensesi.exception.customException.StarCreationException;
+import com.arda.evrensesi.exception.customException.StarNotFoundException;
 import com.arda.evrensesi.exception.customException.UserRegistrationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
@@ -51,6 +52,14 @@ public class GlobalExceptionHandler {
         String msg = messageSource.getMessage(ex.getMessage(), null, ex.getMessage(), locale);
 
         return ResponseEntity.status(HttpStatus.CONFLICT).body(msg);
+    }
+    @ExceptionHandler(StarNotFoundException.class)
+    public ResponseEntity<String> handleStarNotFoundException(StarNotFoundException ex, Locale locale){
+        log.warn("Star not found: messageKey={}", ex.getMessage());
+
+        String msg = messageSource.getMessage(ex.getMessage(),ex.getArgs(),ex.getMessage(),locale);
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(msg);
     }
 
 

@@ -1,6 +1,7 @@
 package com.arda.evrensesi.repository;
 
 import com.arda.evrensesi.dto.StarCoordinatesDTO;
+import com.arda.evrensesi.dto.StarMessageDTO;
 import com.arda.evrensesi.model.entity.Star;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -37,5 +38,12 @@ public interface StarRepository extends JpaRepository<Star, UUID> {
     WHERE s.user.email = :email
 """)
     Optional<StarCoordinatesDTO> findUserStar(@Param("email") String email);
+
+    @Query("""
+    SELECT new com.arda.evrensesi.dto.StarMessageDTO(s.message)
+    FROM Star s
+    WHERE s.x = :x AND s.y = :y
+     """)
+    Optional<StarMessageDTO> getMessageByXandY(@Param("x") int x, @Param("y") int y);
 
 }

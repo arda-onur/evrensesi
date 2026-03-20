@@ -1,5 +1,6 @@
 package com.arda.evrensesi.service.impl;
 
+import com.arda.evrensesi.exception.customException.StarNotFoundException;
 import com.arda.evrensesi.model.entity.Star;
 import com.arda.evrensesi.repository.StarRepository;
 import com.arda.evrensesi.service.StarIndexStatusService;
@@ -21,10 +22,14 @@ public class StarIndexStatusServiceImpl implements StarIndexStatusService {
     }
    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void markIndexed(UUID starId) {
-        Star star = starRepository.findById(starId)
-                .orElseThrow(() -> new IllegalStateException("Star not found. id=" + starId));
+        log.info("Marking star as indexed. starId={}", starId);
 
-        star.setEsIndexed(true);
-        starRepository.save(star);
+            Star star = starRepository.findById(starId)
+                    .orElseThrow(() -> new StarNotFoundException("Star not found. id=" + starId));
+
+            star.setEsIndexed(true);
+            starRepository.save(star);
+
+       log.info("Star marked as indexed successfully. starId={}", starId);
     }
 }

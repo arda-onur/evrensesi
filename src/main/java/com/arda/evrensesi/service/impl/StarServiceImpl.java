@@ -110,10 +110,7 @@ public class StarServiceImpl implements StarService {
     public List<StarCoordinatesDTO> search(String keyword) {
         log.info("Star search requested. keyword={}", keyword);
 
-        if (keyword == null || keyword.isBlank()) {
-            log.warn("Star search rejected because keyword is null or blank");
-            throw new IllegalArgumentException("search.keyword.empty");
-        }
+       checkKeywordExists(keyword);
 
         List<StarCoordinatesDTO> list = this.starESRepository
                 .findByMessageContaining(keyword)
@@ -177,5 +174,11 @@ public class StarServiceImpl implements StarService {
         log.debug("Authenticated user resolved as {}", email);
 
         return email;
+    }
+    private void checkKeywordExists(String keyword){
+        if (keyword == null || keyword.isBlank()) {
+            log.warn("Star search rejected because keyword is null or blank");
+            throw new IllegalArgumentException("search.keyword.empty");
+        }
     }
 }

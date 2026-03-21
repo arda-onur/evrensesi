@@ -1,11 +1,10 @@
-package com.arda.evrensesi;
+package com.arda.evrensesi.UnitTest;
 
 import com.arda.evrensesi.dto.StarCoordinatesDTO;
 import com.arda.evrensesi.dto.StarMessageDTO;
 import com.arda.evrensesi.event.StarCreatedEvent;
 import com.arda.evrensesi.exception.customException.StarAlreadyExistsException;
 import com.arda.evrensesi.exception.customException.StarNotFoundException;
-import com.arda.evrensesi.exception.customException.UserRegistrationException;
 import com.arda.evrensesi.model.document.StarDocument;
 import com.arda.evrensesi.model.entity.Star;
 import com.arda.evrensesi.model.entity.User;

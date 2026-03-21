@@ -1,120 +1,147 @@
 package com.arda.evrensesi.UnitTest;
 
-import com.arda.evrensesi.model.entity.User;
 import com.arda.evrensesi.exception.customException.UserRegistrationException;
+import com.arda.evrensesi.model.entity.User;
 import com.arda.evrensesi.repository.UserRepository;
 import com.arda.evrensesi.request.LoginRequest;
 import com.arda.evrensesi.request.RegisterRequest;
 import com.arda.evrensesi.service.impl.UserServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletResponse;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceUnitTest {
     @Mock
-    UserRepository userRepository;
-
+    private UserRepository userRepository;
     @Mock
-    PasswordEncoder passwordEncoder;
-
+    private PasswordEncoder passwordEncoder;
     @Mock
-    AuthenticationManager authenticationManager;
-
+    private AuthenticationManager authenticationManager;
     @Mock
-    HttpServletRequest httpServletRequest;
-
+    private HttpSessionSecurityContextRepository securityContextRepository;
     @Mock
-    HttpSession httpSession;
-
+    private HttpServletRequest httpServletRequest;
     @Mock
-    Authentication authentication;
-
+    private HttpServletResponse httpServletResponse;
+    @Captor
+    private ArgumentCaptor<User> userCaptor;
     @InjectMocks
     UserServiceImpl userService;
+    static RegisterRequest normalRequest;
+    static RegisterRequest notMatchPassRequest;
+    static LoginRequest normalLoginRequest;
 
-    @Test
-    void register_shouldThrowException_whenEmailExists() {
-        String email = "test@mail.com";
-        RegisterRequest request = new RegisterRequest(email, "123", "123");
-
-        when(userRepository.existsByEmail(email)).thenReturn(true);
-
-        assertThrows(UserRegistrationException.class, () -> userService.register(request));
-
-        verify(userRepository).existsByEmail(email);
-        verify(userRepository, never()).save(any());
+    @BeforeAll
+    public static void setUser(){
+               normalRequest = new RegisterRequest(
+                "arda@gmail.com",
+                "12345",
+                "12345");
+               notMatchPassRequest = new RegisterRequest(
+                "arda@gmail.com",
+                "12345",
+                "1234");
+               normalLoginRequest =  new LoginRequest(
+                       "arda@mail.com",
+                       "123456");
     }
 
     @Test
-    void register_shouldThrowException_whenPasswordsMismatch() {
-        RegisterRequest request = new RegisterRequest("test@mail.com", "123", "456");
+    public void register_shouldRegisterUserSuccessfully(){
+    when(userRepository.existsByEmail(normalRequest.email())).thenReturn(false);
+    when(passwordEncoder.encode(normalRequest.password())).thenReturn("encodedPassword");
 
-        when(userRepository.existsByEmail("test@mail.com")).thenReturn(false);
+    userService.register(normalRequest);
 
-        assertThrows(UserRegistrationException.class, () -> userService.register(request));
+    verify(userRepository).save(any(User.class));
+    }
+    @Test
+    public void register_shouldThrowExceptionWhenEmailAlreadyExists(){
+        when(userRepository.existsByEmail(normalRequest.email())).thenReturn(true);
 
-        verify(userRepository, never()).save(any(User.class));
+        assertThrows(UserRegistrationException.class, () -> userService.register(normalRequest));
+
+        verify(userRepository,never()).save(any());
     }
 
     @Test
-    void register_shouldSaveUser() {
-        RegisterRequest request = new RegisterRequest("test@mail.com", "123", "123");
+    public void register_shouldThrowExceptionWhenPasswordsDoNotMatch(){
+        when(userRepository.existsByEmail(notMatchPassRequest.email())).thenReturn(false);
 
-        when(userRepository.existsByEmail("test@mail.com")).thenReturn(false);
-        when(passwordEncoder.encode("123")).thenReturn("encoded");
+        assertThrows(UserRegistrationException.class,()-> userService.register(notMatchPassRequest));
 
-        userService.register(request);
+        verify(userRepository,never()).save(any());
+    }
+    @Test
+    public void register_shouldSaveUserWithEncodedPassword(){
+        when(userRepository.existsByEmail(normalRequest.email())).thenReturn(false);
+        when(passwordEncoder.encode(normalRequest.password())).thenReturn("encodedPassword");
 
-        verify(passwordEncoder).encode("123");
-        verify(userRepository).save(any(User.class));
+        ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
+
+        userService.register(normalRequest);
+
+        verify(userRepository).save(userCaptor.capture());
+
+        User savedUser = userCaptor.getValue();
+
+        assertNotNull(savedUser);
+        assertEquals("arda@gmail.com", savedUser.getEmail());
+        assertEquals("encodedPassword", savedUser.getPassword());
+        assertNotEquals("123456", savedUser.getPassword());
+
+
+        verify(passwordEncoder).encode("12345");
     }
 
     @Test
-    void login_shouldAuthenticateSuccessfully() {
-        LoginRequest request = new LoginRequest("test@mail.com", "123");
+    public void login_shouldAuthenticateAndSaveSecurityContextSuccessfully() {
+        Authentication authentication = new UsernamePasswordAuthenticationToken(normalLoginRequest.email(),
+                                                                                normalLoginRequest.password());
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
+                .thenReturn(authentication);
 
-        when(authenticationManager.authenticate(any())).thenReturn(authentication);
-        when(httpServletRequest.getSession(true)).thenReturn(httpSession);
 
-        userService.login(request, httpServletRequest);
+        userService.login(normalLoginRequest, httpServletRequest, httpServletResponse);
 
-        verify(authenticationManager).authenticate(any());
+        verify(authenticationManager).authenticate(any(UsernamePasswordAuthenticationToken.class));
+
+        assertEquals(authentication, SecurityContextHolder.getContext().getAuthentication());
     }
 
     @Test
-    void login_shouldStoreSecurityContextInSession() {
-        LoginRequest request = new LoginRequest("test@mail.com", "123");
+    void login_shouldNotSaveContextWhenAuthenticationFails() {
+        LoginRequest badRequest = new LoginRequest("arda@mail.com", "wrongPassword");
 
-        when(authenticationManager.authenticate(any())).thenReturn(authentication);
-        when(httpServletRequest.getSession(true)).thenReturn(httpSession);
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
+              .thenThrow(new BadCredentialsException("Bad credentials"));
 
-        userService.login(request, httpServletRequest);
+      assertThrows(BadCredentialsException.class,
+              () -> userService.login(badRequest,httpServletRequest,httpServletResponse));
 
-        verify(httpSession).setAttribute(anyString(), any());
-    }
+      verify(authenticationManager).authenticate(any(UsernamePasswordAuthenticationToken.class));
+      verify(securityContextRepository, never())
+                .saveContext(any(SecurityContext.class), any(HttpServletRequest.class), any(HttpServletResponse.class));
 
-    @Test
-    void login_shouldThrowException_whenCredentialsAreWrong() {
-        LoginRequest request = new LoginRequest("test@mail.com", "123");
-
-        when(authenticationManager.authenticate(any()))
-                .thenThrow(new BadCredentialsException("Bad Credentials"));
-
-        assertThrows(BadCredentialsException.class,
-                () -> userService.login(request, httpServletRequest));
-
-        verify(httpServletRequest, never()).getSession(true);
+        assertNull(SecurityContextHolder.getContext().getAuthentication());
     }
 }

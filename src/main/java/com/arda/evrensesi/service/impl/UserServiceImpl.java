@@ -60,7 +60,7 @@ public class UserServiceImpl implements UserService {
 
     }
 
-  public void login(LoginRequest loginRequest, HttpServletRequest httpRequest, HttpServletResponse httpResponse){
+  public UserDTO login(LoginRequest loginRequest, HttpServletRequest httpRequest, HttpServletResponse httpResponse){
       log.info("Login requested. email={}", loginRequest.email());
 
       Authentication authentication = authenticate(loginRequest);
@@ -69,6 +69,10 @@ public class UserServiceImpl implements UserService {
       this.securityContextRepository.saveContext(context, httpRequest, httpResponse);
 
       log.info("User logged in = {}", loginRequest.email());
+
+      UserDTO userDTO = UserMapper.toDTO(loginRequest);
+
+      return userDTO;
   }
 
 

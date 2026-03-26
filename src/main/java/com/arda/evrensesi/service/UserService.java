@@ -9,5 +9,5 @@ import jakarta.servlet.http.HttpServletResponse;
 
 public interface UserService {
     UserDTO register(RegisterRequest registerRequest);
-    void login(LoginRequest registerRequest, HttpServletRequest httpRequest, HttpServletResponse httpResponse);
+    UserDTO login(LoginRequest registerRequest, HttpServletRequest httpRequest, HttpServletResponse httpResponse);
 }

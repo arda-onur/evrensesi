@@ -22,9 +22,20 @@ public class RateLimiterFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getRequestURI();
-        return path.startsWith("/h2-console") || path.startsWith("/star/points");
-    }
 
+        return path.startsWith("/h2-console")
+                || path.startsWith("/actuator")
+                || path.startsWith("/assets/")
+                || path.equals("/")
+                || path.equals("/index.html")
+                || path.equals("/favicon.ico")
+                || path.equals("/favicon.svg")
+                || path.equals("/icons.svg")
+                || path.startsWith("/api/star/points")
+                || path.startsWith("/api/auth/logout")
+                || path.startsWith("/api/user/me")
+                || path.startsWith("/api/star/mystar");
+    }
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
                                                         FilterChain filterChain) throws ServletException, IOException {

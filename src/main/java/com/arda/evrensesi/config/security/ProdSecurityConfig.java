@@ -1,6 +1,7 @@
 package com.arda.evrensesi.config.security;
 
 import com.arda.evrensesi.security.CustomUserDetailsService;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -83,6 +84,9 @@ public class ProdSecurityConfig {
                                 .deleteCookies("JSESSIONID")
                                 .invalidateHttpSession(true)
                                 .clearAuthentication(true)
+                                .logoutSuccessHandler((request, response, authentication) -> {
+                                    response.setStatus(HttpServletResponse.SC_OK);
+                                })
                 )
                 .build();
     }

@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
 @Slf4j
 public class AuthController {
 
@@ -31,10 +31,10 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Void> login(@Valid @RequestBody LoginRequest loginRequest, HttpServletRequest httpRequest,
+    public ResponseEntity<UserDTO> login(@Valid @RequestBody LoginRequest loginRequest, HttpServletRequest httpRequest,
                                       HttpServletResponse httpResponse){
         log.info("Login request received email={}", loginRequest.email());
-        this.userService.login(loginRequest,httpRequest,httpResponse);
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(this.userService.login(loginRequest,httpRequest,httpResponse));
     }
 }

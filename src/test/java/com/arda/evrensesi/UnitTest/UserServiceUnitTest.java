@@ -9,6 +9,7 @@ import com.arda.evrensesi.service.impl.UserServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -63,6 +64,10 @@ public class UserServiceUnitTest {
                normalLoginRequest =  new LoginRequest(
                        "arda@mail.com",
                        "123456");
+    }
+    @BeforeEach
+    void setSecurityContext(){
+        SecurityContextHolder.clearContext();
     }
 
     @Test

@@ -16,7 +16,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/star")
+@RequestMapping("/api/star")
 public class StarController {
 
     private final StarService starService;

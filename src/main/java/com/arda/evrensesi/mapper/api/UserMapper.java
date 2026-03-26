@@ -2,6 +2,7 @@ package com.arda.evrensesi.mapper.api;
 
 import com.arda.evrensesi.dto.UserDTO;
 import com.arda.evrensesi.model.entity.User;
+import com.arda.evrensesi.request.LoginRequest;
 import com.arda.evrensesi.request.RegisterRequest;
 
 public class UserMapper {
@@ -19,6 +20,12 @@ public class UserMapper {
     public static UserDTO toDTO(User user) {
         if (user == null) return null;
 
-        return new UserDTO(user.getEmail(), user.getCreatedAt());
+        return new UserDTO(user.getEmail());
+    }
+
+    public static UserDTO toDTO(LoginRequest loginRequest) {
+        if (loginRequest == null) return null;
+
+        return new UserDTO(loginRequest.email());
     }
 }

@@ -45,7 +45,10 @@ public class ProdSecurityConfig {
                                 "/",
                                 "/index.html",
                                 "/favicon.ico",
-                                "/assets/**"
+                                "/favicon.svg",
+                                "/assets/**",
+                                "/manifest.json",
+                                "/robots.txt"
                         ).permitAll()
                         .requestMatchers(
                                 "/api/auth/login",

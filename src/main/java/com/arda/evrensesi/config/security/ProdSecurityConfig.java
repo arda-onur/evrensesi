@@ -42,6 +42,10 @@ public class ProdSecurityConfig {
                 .cors(withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/star/create",
+                                "/api/star/mystar",
+                                "/api/star/search",
+                                "/api/user/me").authenticated()
                         .requestMatchers(HttpMethod.GET, "/**").permitAll()
                         .requestMatchers(
                                 "/",
@@ -57,10 +61,6 @@ public class ProdSecurityConfig {
                                 "/api/auth/register",
                                 "/api/auth/logout"
                         ).permitAll()
-                        .requestMatchers("/api/star/create",
-                                "/api/star/mystar",
-                                "/api/star/search",
-                                "/api/user").authenticated()
                         .requestMatchers(
                                 "/actuator/health",
                                 "/actuator/prometheus"

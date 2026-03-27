@@ -67,7 +67,6 @@ public class ProdSecurityConfig {
                                 "/actuator/prometheus",
                                 "/actuator/metrics"
                         ).denyAll()
-                        .requestMatchers(HttpMethod.GET, "/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session ->

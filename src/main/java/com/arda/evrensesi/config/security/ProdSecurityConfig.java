@@ -2,6 +2,7 @@ package com.arda.evrensesi.config.security;
 
 import com.arda.evrensesi.security.CustomUserDetailsService;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.boot.security.autoconfigure.web.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -41,6 +42,7 @@ public class ProdSecurityConfig {
                 .cors(withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                         .requestMatchers(
                                 "/",
                                 "/index.html",

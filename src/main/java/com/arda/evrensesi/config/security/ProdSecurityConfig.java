@@ -58,13 +58,14 @@ public class ProdSecurityConfig {
                                 "/api/star/message"
                         ).permitAll()
                         .requestMatchers(
-                                "/actuator/health"
+                                "/actuator/health",
+                                "/actuator/prometheus"
                         ).permitAll()
                         .requestMatchers(
                                 "/h2-console/**"
                         ).denyAll()
                         .requestMatchers(
-                                "/actuator/prometheus",
+
                                 "/actuator/metrics"
                         ).denyAll()
                         .anyRequest().authenticated()

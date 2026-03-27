@@ -64,7 +64,7 @@ services:
     networks:
       - evrensesi-network
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8080/actuator/health" ]
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -87,10 +87,47 @@ services:
       - evrensesi-network
     restart: unless-stopped
 
+  certbot:
+    image: certbot/certbot
+    container_name: evrensesi-certbot
+    volumes:
+      - ./certbot/www:/var/www/certbot
+      - ./certbot/conf:/etc/letsencrypt
+    networks:
+      - evrensesi-network
+
+  prometheus:
+    image: prom/prometheus
+    container_name: evrensesi-prometheus
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - evrensesi-network
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:9090:9090"
+
+  grafana:
+    image: grafana/grafana
+    container_name: evrensesi-grafana
+    depends_on:
+      - prometheus
+    networks:
+      - evrensesi-network
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+
 volumes:
   postgres_data:
   redis_data:
   es_data:
+  grafana_data:
 
 networks:
   evrensesi-network:

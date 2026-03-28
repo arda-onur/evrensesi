@@ -82,7 +82,7 @@ public class ProdSecurityConfig {
                                               accessDeniedException) -> {
                             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
                             response.setContentType("application/json;charset=UTF-8");
-                            response.getWriter().write("Must be logged in to perfom this operation");
+                            response.getWriter().write("Must be logged in to perform this operation");
                         })
                 )
                 .sessionManagement(session ->

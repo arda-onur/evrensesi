@@ -45,8 +45,31 @@ public class DevSecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers( "/h2-console/**","/auth/login", "/auth/register","/star/points",
-                                                "/star/getMessage","/actuator/health", "/actuator/prometheus","/actuator/metrics").permitAll()
+                                "/star/getMessage","/actuator/health",
+                                "/actuator/prometheus","/actuator/metrics").permitAll()
                         .anyRequest().authenticated()
+                )
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint((request, response,
+                                                   authException) -> {
+                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                            response.setContentType("application/json;charset=UTF-8");
+                            response.getWriter().write("""
+                        {
+                          "message": "Must be logged in!"
+                        }
+                        """);
+                        })
+                        .accessDeniedHandler((request, response,
+                                              accessDeniedException) -> {
+                            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                            response.setContentType("application/json;charset=UTF-8");
+                            response.getWriter().write("""
+                        {
+                          "message": "Must be logged in to perfom this operation"
+                        }
+                        """);
+                        })
                 )
                     .sessionManagement(session ->
                             session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
@@ -55,7 +78,8 @@ public class DevSecurityConfig {
                                 .deleteCookies("JSESSIONID")
                                 .invalidateHttpSession(true)
                                 .clearAuthentication(true)
-                                .logoutSuccessHandler((request, response, authentication) -> {
+                                .logoutSuccessHandler((request, response,
+                                                       authentication) -> {
                                     response.setStatus(HttpServletResponse.SC_OK);
                                 })
                                 .permitAll())

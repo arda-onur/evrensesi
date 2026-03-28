@@ -69,9 +69,27 @@ public class ProdSecurityConfig {
                                 "/h2-console/**",
                                 "/actuator/metrics"
                         ).denyAll()
-
-
                         .anyRequest().authenticated()
+                )
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                            response.setContentType("application/json;charset=UTF-8");
+                            response.getWriter().write("""
+                        {
+                          "message": "Must be logged in!"
+                        }
+                        """);
+                        })
+                        .accessDeniedHandler((request, response, accessDeniedException) -> {
+                            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                            response.setContentType("application/json;charset=UTF-8");
+                            response.getWriter().write("""
+                        {
+                          "message": "Must be logged in to perfom this operation"
+                        }
+                        """);
+                        })
                 )
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)

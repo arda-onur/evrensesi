@@ -76,21 +76,13 @@ public class ProdSecurityConfig {
                                                    authException) -> {
                             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                             response.setContentType("application/json;charset=UTF-8");
-                            response.getWriter().write("""
-                        {
-                          "message": "Must be logged in!"
-                        }
-                        """);
+                            response.getWriter().write("Must be logged in!");
                         })
                         .accessDeniedHandler((request, response,
                                               accessDeniedException) -> {
                             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
                             response.setContentType("application/json;charset=UTF-8");
-                            response.getWriter().write("""
-                        {
-                          "message": "Must be logged in to perfom this operation"
-                        }
-                        """);
+                            response.getWriter().write("Must be logged in to perfom this operation");
                         })
                 )
                 .sessionManagement(session ->

@@ -45,13 +45,7 @@ public class RateLimiterFilter extends OncePerRequestFilter {
         if (!this.rateLimiterService.isValidRequest(ip, 10, 60)) {
             response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
             response.setContentType("application/json");
-            response.getWriter().write("""
-                {
-                    "error": "Too many requests",
-                    "message": "Rate limit exceeded"
-                }
-                """);
-
+            response.getWriter().write("Too many requests");
             response.setHeader("X-RateLimit-Limit", "5");
             response.setHeader("X-RateLimit-Remaining", "0");
             return;

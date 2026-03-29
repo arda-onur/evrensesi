@@ -42,7 +42,7 @@ public class RateLimiterFilter extends OncePerRequestFilter {
 
         String ip = request.getRemoteAddr();
 
-        if (!this.rateLimiterService.isValidRequest(ip, 10, 60)) {
+        if (!this.rateLimiterService.isValidRequest(ip, 50, 60)) {
             response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
             response.setContentType("application/json");
             response.getWriter().write("Too many requests");

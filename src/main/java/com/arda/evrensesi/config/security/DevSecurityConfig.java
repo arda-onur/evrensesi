@@ -47,6 +47,11 @@ public class DevSecurityConfig {
                         .requestMatchers( "/h2-console/**","/auth/login", "/auth/register","/star/points",
                                 "/star/getMessage","/actuator/health",
                                 "/actuator/prometheus","/actuator/metrics").permitAll()
+                        .requestMatchers(
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html"
+                        ).permitAll()
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(ex -> ex

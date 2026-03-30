@@ -1,9 +1,8 @@
 spring:
   application:
     name: evrensesi
-
   profiles:
-    active: prod
+    default: dev
 
   messages:
     basename: ExceptionMessages,ValidationMessages

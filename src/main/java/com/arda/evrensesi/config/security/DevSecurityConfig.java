@@ -41,19 +41,51 @@ public class DevSecurityConfig {
                 .cors(withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .headers(headers -> headers
-                        .frameOptions(HeadersConfigurer.FrameOptionsConfig::disable)
-                )
+                        .frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers( "/h2-console/**","/auth/login", "/auth/register","/star/points",
-                                "/star/getMessage","/actuator/health",
-                                "/actuator/prometheus","/actuator/metrics").permitAll()
+
                         .requestMatchers(
-                                "/v3/api-docs/**",
-                                "/swagger-ui/**",
-                                "/swagger-ui.html"
+                                "/api/star/create",
+                                "/api/star/mystar",
+                                "/api/star/search",
+                                "/api/user/me"
+                        ).authenticated()
+
+                        .requestMatchers(
+                                "/api/auth/login",
+                                "/api/auth/register",
+                                "/api/auth/logout"
                         ).permitAll()
-                        .anyRequest().authenticated()
+
+                        .requestMatchers(
+                                "/",
+                                "/index.html",
+                                "/favicon.ico",
+                                "/favicon.svg",
+                                "/assets/**",
+                                "/manifest.json",
+                                "/robots.txt"
+                        ).permitAll()
+
+                        .requestMatchers(
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/v3/api-docs/**"
+                        ).permitAll()
+
+                        .requestMatchers(
+                                "/actuator/health",
+                                "/actuator/prometheus"
+                        ).permitAll()
+
+                        .requestMatchers(
+                                "/h2-console/**",
+                                "/actuator/metrics"
+                        ).permitAll()
+
+                        .anyRequest().permitAll()
                 )
+
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint((request, response,
                                                    authException) -> {

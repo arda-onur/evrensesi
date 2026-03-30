@@ -1,0 +1,95 @@
+services:
+  redis:
+    image: redis:7
+    container_name: evrensesi-redis-dev
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data_dev:/data
+    networks:
+      - evrensesi-network-dev
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:9.2.5
+    container_name: evrensesi-elasticsearch-dev
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+    ports:
+      - "9200:9200"
+    volumes:
+      - es_data_dev:/usr/share/elasticsearch/data
+    networks:
+      - evrensesi-network-dev
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:9200 >/dev/null || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 70s
+    restart: unless-stopped
+
+  backend:
+    build: .
+    container_name: evrensesi-backend-dev
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    depends_on:
+      redis:
+        condition: service_healthy
+      elasticsearch:
+        condition: service_healthy
+    networks:
+      - evrensesi-network-dev
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 90s
+    restart: on-failure
+
+  prometheus:
+    image: prom/prometheus
+    container_name: evrensesi-prometheus-dev
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - evrensesi-network-dev
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:9090:9090"
+
+  grafana:
+    image: grafana/grafana
+    container_name: evrensesi-grafana-dev
+    depends_on:
+      - prometheus
+    networks:
+      - evrensesi-network-dev
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3000:3000"
+    volumes:
+      - grafana_data_dev:/var/lib/grafana
+
+volumes:
+  redis_data_dev:
+  es_data_dev:
+  grafana_data_dev:
+
+networks:
+  evrensesi-network-dev:
+    driver: bridge

@@ -19,7 +19,7 @@
 - Swagger / OpenAPI (springdoc 3.x)
 
 **Frontend**
-- React (Vite) — embedded and served by the backend
+- React (Vite) embedded and served by the backend
 
 **Infrastructure**
 - Docker + Docker Compose
@@ -105,7 +105,7 @@ This will start the following services:
 
 > ⏳ The application may take ~90 seconds to become available while Elasticsearch and Redis start up.
 
-> 💡 The frontend is embedded in the backend — no separate frontend server needed. Everything runs on `http://localhost:8080`.
+> 💡 The frontend is embedded in the backend no separate frontend server needed. Everything runs on `http://localhost:8080`.
 
 ---
 
@@ -134,8 +134,6 @@ http://localhost:8080/swagger-ui/index.html
 ```
 
 ---
-
-## Notes
 
 - On first run, Elasticsearch may take longer to become healthy depending on your machine's resources.
 - If you previously ran an older version of Elasticsearch, remove the volume before upgrading:

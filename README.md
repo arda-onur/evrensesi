@@ -1,6 +1,6 @@
 # 🌟 EvrenSesi
 
-**EvrenSesi** is a full-stack web application where users can register, log in, and place a star anywhere on a shared cosmic canvas. Each star carries a personal message — click any star to read what someone left behind. Search stars by keyword using Elasticsearch.
+**EvrenSesi** is a full-stack web application where users can register, log in, and place a star anywhere on a shared cosmic canvas. Each star carries a personal message click any star to read what someone left behind. Search stars by keyword using Elasticsearch.
 
 🌐 **Live:** [evrensesi.com](https://evrensesi.com)
 

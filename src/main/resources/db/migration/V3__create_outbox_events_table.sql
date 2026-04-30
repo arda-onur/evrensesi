@@ -1,0 +1,6 @@
+CREATE TABLE IF NOT EXISTS outbox_events (
+    id UUID PRIMARY KEY,
+    event_type VARCHAR(100) NOT NULL,
+    payload TEXT NOT NULL,
+    sent BOOLEAN NOT NULL DEFAULT FALSE
+    );

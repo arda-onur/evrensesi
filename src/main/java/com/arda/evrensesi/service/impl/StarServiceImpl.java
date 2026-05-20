@@ -8,15 +8,17 @@ import com.arda.evrensesi.exception.customException.StarCreationException;
 import com.arda.evrensesi.exception.customException.StarNotFoundException;
 import com.arda.evrensesi.mapper.api.StarMapper;
 import com.arda.evrensesi.mapper.search.StarDocumentMapper;
+import com.arda.evrensesi.model.entity.OutboxEvent;
 import com.arda.evrensesi.model.entity.Star;
 import com.arda.evrensesi.model.entity.User;
+import com.arda.evrensesi.repository.OutboxEventRepository;
 import com.arda.evrensesi.repository.StarESRepository;
 import com.arda.evrensesi.repository.StarRepository;
 import com.arda.evrensesi.repository.UserRepository;
 import com.arda.evrensesi.request.StarRequest;
 import com.arda.evrensesi.service.StarService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -25,28 +27,21 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.util.List;
 import java.util.Objects;
 
 @Service
+@RequiredArgsConstructor
 @Slf4j
 public class StarServiceImpl implements StarService {
 
     private final StarRepository starRepository;
     private final UserRepository userRepository;
     private final StarESRepository starESRepository;
-    private final ApplicationEventPublisher applicationEventPublisher;
-
-    public StarServiceImpl(StarRepository starRepository,
-                           UserRepository userRepository,
-                           StarESRepository starESRepository,
-                           ApplicationEventPublisher applicationEventPublisher) {
-        this.starRepository = starRepository;
-        this.userRepository = userRepository;
-        this.starESRepository = starESRepository;
-        this.applicationEventPublisher = applicationEventPublisher;
-    }
+    private final OutboxEventRepository outboxEventRepository;
+    private final JsonMapper jsonMapper;
 
     @Override
     @Transactional
@@ -71,17 +66,22 @@ public class StarServiceImpl implements StarService {
             user.linkStar(star);
             starRepository.saveAndFlush(star);
 
-            applicationEventPublisher.publishEvent(
-                    new StarCreatedEvent(
-                            star.getId(),
-                            star.getMessage(),
-                            star.getX(),
-                            star.getY()
-                    )
-            );
-
             log.info("Star created successfully. user={}, starId={}, x={}, y={}",
                     userEmail, star.getId(), star.getX(), star.getY());
+
+            StarCreatedEvent event = new StarCreatedEvent(
+                    star.getId(),
+                    star.getMessage(),
+                    star.getX(),
+                    star.getY()
+            );
+
+            String payload = jsonMapper.writeValueAsString(event);
+
+            outboxEventRepository.save(
+                    new OutboxEvent("StarCreatedEvent", payload)
+            );
+
 
             return StarMapper.toPointDTO(star);
 
